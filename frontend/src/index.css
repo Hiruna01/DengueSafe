@@ -5,30 +5,57 @@
   components never reach for a raw colour.
 */
 @theme {
-  --color-canvas: #fbfbfa;
+  /* A warm off-white ground rather than a cool grey one: this is a health
+     service, and the warmth keeps long passages of text from reading clinical
+     in the wrong way. */
+  --color-canvas: #faf8f4;
   --color-surface: #ffffff;
-  --color-line: #e6e5e2;
-  --color-line-strong: #d3d2ce;
+  --color-line: #e7e2d8;
+  --color-line-strong: #d5cfc2;
 
-  --color-ink: #1c1b19;
-  --color-ink-muted: #6b6a65;
-  --color-ink-subtle: #94938d;
+  --color-ink: #1a1917;
+  --color-ink-muted: #6a6760;
+  --color-ink-subtle: #938f86;
 
-  --color-accent: #3d5a3d;
-  --color-accent-hover: #324a32;
-  --color-accent-soft: #eef2ee;
+  /* One accent, a deep clinical teal. Dark enough to carry body text on the
+     warm ground (about 9:1) so it can be used for links, not just fills. */
+  --color-accent: #0e4f52;
+  --color-accent-hover: #0a3c3f;
+  --color-accent-soft: #e6efee;
 
   --color-danger: #8c2f26;
   --color-danger-soft: #fbeeec;
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  /*
+    Risk bands are the one place beyond status where colour carries meaning.
+    Emergency reuses danger and Monitor reuses accent; these two add the
+    middle of the scale — amber for "act before it spreads", purple for
+    "go and find out why".
+  */
+  --color-warn: #8a5512;
+  --color-warn-soft: #fdf2e4;
 
-  /* Type scale: 12 / 14 / 16 / 20 / 28. Nothing in between. */
+  --color-study: #58407c;
+  --color-study-soft: #f2eff7;
+
+  /* Public Sans for text, Source Serif 4 for display. Both self-hosted through
+     fontsource, whose @font-face rules already carry font-display: swap. */
+  --font-sans: "Public Sans Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
+
+  /* Type scale: 12 / 14 / 16 / 20 / 28, extended at the top for editorial
+     display sizes — 36 / 48 / 72. Nothing in between, at either end. */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
   --text-lg: 1.25rem;
   --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+  --text-2xl--line-height: 1.15;
+  --text-3xl: 3rem;
+  --text-3xl--line-height: 1.06;
+  --text-4xl: 4.5rem;
+  --text-4xl--line-height: 0.95;
 }
 
 html {
@@ -49,4 +76,30 @@ body {
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+/*
+  Scroll reveal. The transition is described here rather than in utilities so a
+  reduced-motion preference can switch the whole effect off in one place — the
+  element still ends up visible, it just arrives without travelling.
+*/
+.reveal {
+  opacity: 0;
+  transform: translateY(0.75rem);
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal[data-revealed='true'] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }

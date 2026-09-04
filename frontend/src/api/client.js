@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { clearSession, readToken } from './authToken'
 
 const client = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -38,20 +39,57 @@ function readMessage(error) {
   if (data && typeof data.title === 'string') return data.title
   if (typeof data === 'string' && data.trim()) return data
 
+  if (status === 401) return 'Your session has expired. Sign in again.'
+  if (status === 403) return 'You do not have permission to do that.'
   if (status === 404) return 'Not found.'
   if (status === 400) return 'Some fields need attention.'
   return `Request failed (${status}).`
 }
 
+/*
+  Every request carries the token if there is one. Anonymous endpoints — the
+  risk board, submitting a report, the phone lookup — simply ignore it.
+*/
+client.interceptors.request.use((config) => {
+  const token = readToken()
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+
+  return config
+})
+
+/*
+  A 401 means the token is missing, expired or no longer accepted. There is
+  nothing to retry, so the session is dropped and the officer is sent to sign in
+  again — with one exception: a 401 raised by the login page itself would send
+  it in a circle.
+*/
+function handleUnauthorized() {
+  clearSession()
+
+  if (window.location.pathname !== '/login') {
+    // A full navigation rather than a router push: the interceptor sits
+    // outside React, and this also clears any state left from the old session.
+    window.location.assign('/login')
+  }
+}
+
 // Unwrap the body so callers get the payload, not the axios envelope.
 client.interceptors.response.use(
   (response) => response.data,
-  (error) =>
-    Promise.reject({
+  (error) => {
+    if (error.response?.status === 401) {
+      handleUnauthorized()
+    }
+
+    return Promise.reject({
       message: readMessage(error),
       fieldErrors: readFieldErrors(error.response?.data),
       status: error.response?.status ?? 0,
-    }),
+    })
+  },
 )
 
 export default client
