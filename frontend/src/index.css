@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/*
+  One neutral ramp, one accent, one type scale. Everything below is a token —
+  components never reach for a raw colour.
+*/
+@theme {
+  --color-canvas: #fbfbfa;
+  --color-surface: #ffffff;
+  --color-line: #e6e5e2;
+  --color-line-strong: #d3d2ce;
+
+  --color-ink: #1c1b19;
+  --color-ink-muted: #6b6a65;
+  --color-ink-subtle: #94938d;
+
+  --color-accent: #3d5a3d;
+  --color-accent-hover: #324a32;
+  --color-accent-soft: #eef2ee;
+
+  --color-danger: #8c2f26;
+  --color-danger-soft: #fbeeec;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Type scale: 12 / 14 / 16 / 20 / 28. Nothing in between. */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* A single visible focus treatment, applied consistently. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
