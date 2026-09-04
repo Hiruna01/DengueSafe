@@ -33,6 +33,11 @@ public class ExceptionHandlingMiddleware
         {
             await _next(context);
         }
+        catch (BadRequestException ex)
+        {
+            _logger.LogInformation(ex, "Rejected request for {Path}", context.Request.Path);
+            await WriteAsync(context, StatusCodes.Status400BadRequest, ex.Message, detail: null);
+        }
         catch (NotFoundException ex)
         {
             _logger.LogInformation(ex, "Resource not found for {Path}", context.Request.Path);
